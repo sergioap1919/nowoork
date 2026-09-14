@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-09-13 · ZIP 03 · Resultados + reputación
+
+- Se agrega `006_results_reputation.sql`.
+- Empresa registra una sola vez el resultado real de una decisión y su confianza de atribución.
+- Todas las respuestas de una decisión se evalúan de forma atómica como Acierto, Neutral o Desacierto.
+- El score se modifica únicamente dentro de una RPC protegida; no existe edición directa desde el navegador.
+- El impacto de score depende de dificultad y confianza de atribución.
+- Se crea `score_events` como ledger inmutable con score anterior, delta y score posterior.
+- Precisión, decisiones evaluadas, racha actual y mejor racha se recalculan automáticamente.
+- Las evaluaciones neutrales no alteran precisión ni racha.
+- Se endurece `submit_decision_answer` con bloqueo de fila para evitar carreras entre una nueva respuesta y el cierre/evaluación.
+- Solucionador puede ver el resultado verificable de sus respuestas y el cambio concreto de score.
+- `/app/resultados` deja de usar datos demo.
+- `/app/ranking` deja de usar personas demo y se alimenta de reputación real mediante RPC segura.
+- El panel de Empresa identifica decisiones ya evaluadas.
+- Shopify, Meta, wallet y pagos continúan fuera de este ZIP.
+
+
 ## 2026-09-13 · ZIP 01 cerrado · Fundación
 
 - Registro de Solucionador y Empresa consolidado.
@@ -44,3 +62,14 @@
 - Configured Next.js `output: "export"`.
 - Disabled server image optimization for compatibility with static export.
 - Static output is generated in the `out/` directory.
+
+## 2026-09-13 · ZIP 02 · Marketplace completo
+
+- Se elimina el marketplace demo: las decisiones ahora salen de Supabase.
+- Empresa puede crear borradores, editarlos, publicarlos, cerrarlos y cancelarlos.
+- Panel empresa usa métricas y actividad reales.
+- Solucionador ve decisiones publicadas con compatibilidad inicial por especialidad.
+- Cada solucionador puede responder una decisión una sola vez.
+- Empresa puede revisar los criterios recibidos sin exponer todavía identidad pública del solucionador.
+- Se agrega `005_decision_marketplace.sql` con tablas, RLS, permisos y RPCs del ciclo de decisiones.
+- Shopify, Meta, score por resultados y wallet siguen fuera de este ZIP por diseño.
