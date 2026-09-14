@@ -13,6 +13,15 @@ export default async function Layout({ children }: { children: React.ReactNode }
     .eq("id", user.id)
     .maybeSingle();
 
+  if (!profile) {
+    await supabase.auth.signOut();
+    redirect("/login?error=profile");
+  }
+
+  if (profile.primary_role !== "solver") {
+    redirect("/empresa");
+  }
+
   const { data: solver } = await supabase
     .from("solver_profiles")
     .select("score")
@@ -30,7 +39,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const specialty = Array.isArray(specialtyRelation) ? specialtyRelation[0]?.name : specialtyRelation?.name;
 
   return <AppShell
-    profileName={profile?.full_name || user.email?.split("@")[0] || "Usuario"}
+    profileName={profile.full_name || user.email?.split("@")[0] || "Usuario"}
     specialty={specialty || "Solucionador"}
     score={solver?.score ?? 500}
   >{children}</AppShell>;

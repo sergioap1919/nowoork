@@ -36,11 +36,18 @@ export async function proxy(request: NextRequest) {
   }
 
   if (user && isAuthPage) {
-    const role = user.user_metadata?.primary_role;
-    const destination = request.nextUrl.clone();
-    destination.pathname = role === "company" ? "/empresa" : "/app";
-    destination.search = "";
-    return NextResponse.redirect(destination);
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("primary_role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profile) {
+      const destination = request.nextUrl.clone();
+      destination.pathname = profile.primary_role === "company" ? "/empresa" : "/app";
+      destination.search = "";
+      return NextResponse.redirect(destination);
+    }
   }
 
   return response;

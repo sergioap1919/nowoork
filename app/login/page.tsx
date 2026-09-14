@@ -28,18 +28,48 @@ function LoginForm() {
       return;
     }
 
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("primary_role")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      await supabase.auth.signOut();
+      setError(
+        profileError.code === "42501"
+          ? "Tu cuenta existe, pero Nowoork no tiene permiso para leer tu perfil. Ejecuta la migración 003_data_api_permissions.sql y vuelve a entrar."
+          : `No pudimos leer tu perfil de Nowoork (${profileError.code || "error"}).`
+      );
+      setLoading(false);
+      return;
+    }
+
+    if (!profile) {
+      await supabase.auth.signOut();
+      setError("Tu cuenta existe, pero su perfil de Nowoork no existe en la base de datos.");
+      setLoading(false);
+      return;
+    }
+
+    const home = profile.primary_role === "company" ? "/empresa" : "/app";
     const requested = searchParams.get("next");
-    const role = data.user?.user_metadata?.primary_role;
-    const fallback = role === "company" ? "/empresa" : "/app";
-    router.replace(requested || fallback);
+    const requestedIsValid = profile.primary_role === "company"
+      ? requested?.startsWith("/empresa")
+      : requested?.startsWith("/app");
+
+    router.replace(requestedIsValid && requested ? requested : home);
     router.refresh();
   }
+
+  const urlError = searchParams.get("error");
 
   return <div className="authContent">
     <span className="kicker">BIENVENIDO</span>
     <h1>Entra a Nowoork.</h1>
     <p>Continúa construyendo el valor de tu criterio.</p>
-    {searchParams.get("error") === "confirmation" && <div className="formMessage error">No pudimos confirmar tu correo. Intenta de nuevo.</div>}
+    {urlError === "confirmation" && <div className="formMessage error">No pudimos confirmar tu correo. Intenta de nuevo.</div>}
+    {urlError === "profile" && <div className="formMessage error">Tu sesión fue creada, pero falta completar tu perfil de Nowoork. Ejecuta la migración de integridad y vuelve a entrar.</div>}
     <form className="authForm" onSubmit={onSubmit}>
       <label>Correo<input type="email" placeholder="tu@correo.com" value={email} onChange={(e)=>setEmail(e.target.value)} required autoComplete="email" /></label>
       <label>Contraseña<input type="password" placeholder="••••••••" value={password} onChange={(e)=>setPassword(e.target.value)} required minLength={8} autoComplete="current-password" /></label>

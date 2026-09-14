@@ -15,3 +15,5 @@
 .authForm button:disabled,.signOutButton:disabled{opacity:.65;cursor:not-allowed}
 .signOutButton{margin-top:12px;width:100%;border:0;background:transparent;color:var(--muted);font-size:11px;text-align:left;padding:7px 46px;border-radius:8px}
 .signOutButton:hover{color:var(--text);background:var(--surface-2)}
+
+.rolePrompt{margin:24px 0 18px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.5}.signOutButton.headerSignOutButton{margin:0;width:auto;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font-size:12px;text-align:center}.signOutButton.headerSignOutButton:hover{background:var(--surface-2);color:var(--text)}

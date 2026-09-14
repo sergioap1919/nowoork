@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Brand } from "@/components/Brand";
 import { createClient } from "@/lib/supabase/client";
@@ -19,16 +19,30 @@ const specialties = [
 
 export default function Register() {
   const router = useRouter();
-  const [role, setRole] = useState<Role>("solver");
+  const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const requestedRole = new URLSearchParams(window.location.search).get("role");
+    if (requestedRole === "solver" || requestedRole === "company") {
+      setRole(requestedRole);
+    }
+  }, []);
+
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setMessage("");
     setLoading(true);
+
+    if (!role) {
+      setError("Elige si quieres usar Nowoork como solucionador o como empresa.");
+      setLoading(false);
+      return;
+    }
 
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") || "").trim();
@@ -83,7 +97,7 @@ export default function Register() {
         <button type="button" onClick={()=>setRole("solver")} className={role==="solver"?"active":""}><strong>Quiero resolver decisiones</strong><span>Usa tu experiencia, construye score y genera ingresos.</span></button>
         <button type="button" onClick={()=>setRole("company")} className={role==="company"?"active":""}><strong>Soy una empresa</strong><span>Obtén criterio humano en los momentos que importan.</span></button>
       </div>
-      <form className="authForm" onSubmit={onSubmit}>
+      {role ? <form className="authForm" onSubmit={onSubmit}>
         <label>Tu nombre completo<input name="fullName" placeholder="Tu nombre" required /></label>
         {role === "solver" ? <>
           <label>Especialidad principal<select name="specialtySlug" defaultValue="marketing" required>{specialties.map((item)=><option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
@@ -97,7 +111,7 @@ export default function Register() {
         {error && <div className="formMessage error">{error}</div>}
         {message && <div className="formMessage success">{message}</div>}
         <button className="primaryButton full" type="submit" disabled={loading}>{loading ? "Creando cuenta…" : role === "solver" ? "Crear perfil" : "Crear empresa"}</button>
-      </form>
+      </form> : <div className="rolePrompt">Elige una opción para continuar con la creación de tu cuenta.</div>}
       <small>¿Ya tienes cuenta? <Link href="/login">Entrar</Link></small>
     </div>
   </div>;

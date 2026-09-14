@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export function SignOutButton() {
+export function SignOutButton({ variant = "sidebar" }: { variant?: "sidebar" | "header" }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -16,5 +16,5 @@ export function SignOutButton() {
     router.refresh();
   }
 
-  return <button className="signOutButton" onClick={signOut} disabled={loading}>{loading ? "Saliendo…" : "Cerrar sesión"}</button>;
+  return <button className={`signOutButton ${variant === "header" ? "headerSignOutButton" : ""}`} onClick={signOut} disabled={loading}>{loading ? "Saliendo…" : "Cerrar sesión"}</button>;
 }

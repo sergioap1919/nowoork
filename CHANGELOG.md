@@ -1,24 +1,32 @@
 # Changelog
 
-## 2026-09-13 · Supabase Auth Foundation
+## 2026-09-13 · Flujo de registro por intención
+- La portada envía “Quiero resolver decisiones” a registro con Solucionador preseleccionado.
+- La portada envía “Soy una empresa” y “Conectar mi empresa” a registro con Empresa preseleccionada.
+- “Crear cuenta” del menú conserva una entrada neutral: el usuario elige primero su tipo de cuenta.
+- El panel de empresa incorpora cierre de sesión visible en la cabecera.
 
-- Integración base con Supabase SSR para Next.js 16.
-- Registro real de solucionadores y empresas.
-- Login real con correo y contraseña.
-- Confirmación de correo mediante `/auth/callback`.
-- Protección de `/app` y `/empresa` con `proxy.ts`.
-- Cierre de sesión.
-- Dashboard de solucionador empieza a leer nombre, score y métricas reales.
-- Sidebar muestra usuario, especialidad y score reales.
-- Migración `001_core.sql` con perfiles, roles, especialidades, empresas y RLS.
-- Score inicial protegido: no existe policy de UPDATE directo desde cliente.
-- Se elimina `output: "export"`; `npm run export` sigue siendo el empaquetador ZIP del proyecto.
-- `.env.example` incluido sin secretos.
+## 2026-09-13 · Integridad de rol Solucionador / Empresa
 
-### Antes de desplegar
+- El login deja de confiar en `user_metadata` para decidir el panel y usa `profiles.primary_role` como fuente de verdad.
+- El callback de confirmación dirige al panel según el rol guardado en base de datos.
+- `proxy.ts` deja de asumir que una cuenta sin perfil es solucionador.
+- `/app` y `/empresa` fallan de forma segura si el perfil no existe o el rol no corresponde.
+- Nueva migración `002_role_integrity.sql` para reparar cuentas empresa creadas con rol incorrecto y completar empresa/membresía si faltan.
+- El trigger de altas queda endurecido para futuras cuentas.
 
-1. Ejecutar `npm install` para instalar `@supabase/ssr` y `@supabase/supabase-js` y actualizar `package-lock.json`.
-2. Ejecutar `supabase/migrations/001_core.sql` en **nowoork-staging**.
-3. Configurar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en `.env.local` y Vercel staging.
-4. Configurar las URLs de Auth de Supabase para localhost y staging.
-5. Ejecutar `npm run build`.
+## v0.1.0 — Foundation
+- Creación de proyecto Next.js/TypeScript.
+- Diseño visual Nowoork claro/oscuro.
+- Landing y onboarding.
+- Shell de producto para solucionadores.
+- Marketplace filtrable de decisiones.
+- Resultados, ranking e ingresos.
+- Dashboard inicial de empresa e integraciones futuras.
+
+## 0.1.1 - Static export command
+
+- Added `npm run export` / `npm.cmd run export`.
+- Configured Next.js `output: "export"`.
+- Disabled server image optimization for compatibility with static export.
+- Static output is generated in the `out/` directory.

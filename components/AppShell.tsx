@@ -38,7 +38,6 @@ export function AppShell({ children, profileName, specialty, score }: { children
         <header className="topbar">
           <div className="mobileBrand"><Brand size="mobile" priority /></div>
           <div className="topbarSpacer" />
-          <Link className="plainButton" href="/empresa">Empresa</Link>
           <ThemeToggle />
           <button className="avatarButton" aria-label="Perfil">{initial}</button>
         </header>
