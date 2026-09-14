@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Brand } from "./Brand";
 import { ThemeToggle } from "./ThemeToggle";
+import { SignOutButton } from "./SignOutButton";
 import { DecisionsIcon, HomeIcon, RankingIcon, ResultsIcon, WalletIcon } from "./Icons";
 
 const nav = [
@@ -14,8 +15,9 @@ const nav = [
   { href: "/app/ingresos", label: "Ingresos", icon: WalletIcon },
 ];
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children, profileName, specialty, score }: { children: React.ReactNode; profileName: string; specialty: string; score: number }) {
   const pathname = usePathname();
+  const initial = profileName.trim().charAt(0).toUpperCase() || "N";
   return (
     <div className="appShell">
       <aside className="sidebar">
@@ -28,16 +30,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
         <div className="sidebarBottom">
-          <div className="miniProfile"><div className="avatar">S</div><div><strong>Sergio</strong><span>Marketing · 842</span></div></div>
+          <div className="miniProfile"><div className="avatar">{initial}</div><div><strong>{profileName}</strong><span>{specialty} · {score}</span></div></div>
+          <SignOutButton />
         </div>
       </aside>
       <div className="appMain">
         <header className="topbar">
           <div className="mobileBrand"><Brand size="mobile" priority /></div>
           <div className="topbarSpacer" />
-          <button className="plainButton">Empresa</button>
+          <Link className="plainButton" href="/empresa">Empresa</Link>
           <ThemeToggle />
-          <button className="avatarButton">S</button>
+          <button className="avatarButton" aria-label="Perfil">{initial}</button>
         </header>
         <main className="appContent">{children}</main>
       </div>

@@ -1,17 +1,24 @@
-# CHANGELOG
-
-## 2026-09-13 — Logo adaptativo claro/oscuro y proporciones
-
-- Se separaron los logos oficiales para modo claro y modo oscuro.
-- El logo cambia automáticamente según el tema activo sin recargar la página.
-- Se normalizaron/cortaron los PNG para quitar espacio transparente excesivo y mantener proporciones consistentes.
-- Se redujo el logo en navbar, sidebar, móvil, login/registro y footer.
-- Se añadió inicialización temprana del tema para evitar mostrar brevemente el logo incorrecto al cargar.
-- No se tocaron datos demo, flujo de decisiones ni lógica del marketplace.
-
 # Changelog
 
-## Export ZIP limpio
-- Se agrega `npm.cmd run export` para crear un ZIP del proyecto dentro de `/export`.
-- El ZIP excluye `node_modules`, `.next`, `.git`, `/export`, `/out`, `.vercel` y archivos `.env` sensibles.
-- El archivo se genera con fecha y hora para evitar sobrescribir exportaciones anteriores.
+## 2026-09-13 · Supabase Auth Foundation
+
+- Integración base con Supabase SSR para Next.js 16.
+- Registro real de solucionadores y empresas.
+- Login real con correo y contraseña.
+- Confirmación de correo mediante `/auth/callback`.
+- Protección de `/app` y `/empresa` con `proxy.ts`.
+- Cierre de sesión.
+- Dashboard de solucionador empieza a leer nombre, score y métricas reales.
+- Sidebar muestra usuario, especialidad y score reales.
+- Migración `001_core.sql` con perfiles, roles, especialidades, empresas y RLS.
+- Score inicial protegido: no existe policy de UPDATE directo desde cliente.
+- Se elimina `output: "export"`; `npm run export` sigue siendo el empaquetador ZIP del proyecto.
+- `.env.example` incluido sin secretos.
+
+### Antes de desplegar
+
+1. Ejecutar `npm install` para instalar `@supabase/ssr` y `@supabase/supabase-js` y actualizar `package-lock.json`.
+2. Ejecutar `supabase/migrations/001_core.sql` en **nowoork-staging**.
+3. Configurar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en `.env.local` y Vercel staging.
+4. Configurar las URLs de Auth de Supabase para localhost y staging.
+5. Ejecutar `npm run build`.
