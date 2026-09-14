@@ -35,5 +35,10 @@ export default async function CompanyLayout({ children }: { children: React.Reac
   const relation = membership?.companies as { name?: string } | { name?: string }[] | null | undefined;
   const company = Array.isArray(relation) ? relation[0] : relation;
 
-  return <CompanyShell companyName={company?.name || "Mi empresa"}>{children}</CompanyShell>;
+  const { count: notificationCount } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .is("read_at", null);
+
+  return <CompanyShell companyName={company?.name || "Mi empresa"} notificationCount={notificationCount ?? 0}>{children}</CompanyShell>;
 }

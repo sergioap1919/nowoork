@@ -9,6 +9,8 @@ import {
   verdictLabel,
   type AnswerVerdict,
   type DecisionDifficulty,
+  earningStatusLabel,
+  type SolverEarningStatus,
   type SpecialtyOption,
 } from "@/lib/decisions";
 
@@ -32,7 +34,7 @@ export default async function SolverDecisionPage({
     supabase
       .from("decisions")
       .select(
-        "id, title, context, question, specialty_id, difficulty, expected_minutes, base_reward, performance_bonus, deadline_at, companies(name)",
+        "id, company_id, title, context, question, specialty_id, difficulty, expected_minutes, base_reward, performance_bonus, deadline_at, companies(name)",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -65,6 +67,14 @@ export default async function SolverDecisionPage({
         .maybeSingle()
     : { data: null };
 
+  const { data: earning } = answer
+    ? await supabase
+        .from("solver_earnings")
+        .select("base_amount, bonus_amount, total_amount, status, available_at")
+        .eq("answer_id", answer.id)
+        .maybeSingle()
+    : { data: null };
+
   const specialtyList = (specialties ?? []) as SpecialtyOption[];
   const specialty = specialtyList.find(
     (item) => item.id === decision.specialty_id,
@@ -77,6 +87,11 @@ export default async function SolverDecisionPage({
   const company = Array.isArray(companyRelation)
     ? companyRelation[0]
     : companyRelation;
+
+  const { data: reputationRows } = await supabase.rpc("get_company_reputation", {
+    p_company_id: decision.company_id,
+  });
+  const reputation = Array.isArray(reputationRows) ? reputationRows[0] : null;
 
   return (
     <div className="pageStack decisionDetailPage">
@@ -105,6 +120,25 @@ export default async function SolverDecisionPage({
               + {formatCop(decision.performance_bonus)} por resultado
             </small>
           ) : null}
+        </div>
+      </section>
+
+      <section className="companyReputationStrip">
+        <div>
+          <span>Empresa</span>
+          <strong>{company?.name ?? "Empresa Nowoork"}</strong>
+        </div>
+        <div>
+          <span>Decisiones evaluadas</span>
+          <strong>{Number(reputation?.evaluated_decisions ?? 0)}</strong>
+        </div>
+        <div>
+          <span>Tasa de cierre</span>
+          <strong>{Number(reputation?.completion_rate ?? 0).toFixed(0)}%</strong>
+        </div>
+        <div>
+          <span>Respuestas recibidas</span>
+          <strong>{Number(reputation?.total_answers ?? 0)}</strong>
         </div>
       </section>
 
@@ -159,6 +193,19 @@ export default async function SolverDecisionPage({
           <DecisionAnswerForm decisionId={decision.id} />
         )}
       </section>
+
+      {answer && earning ? (
+        <section className="solverEarningNotice">
+          <div>
+            <span className="kicker">RECOMPENSA</span>
+            <strong>{earningStatusLabel(earning.status as SolverEarningStatus)}</strong>
+          </div>
+          <div><span>Base</span><strong>{formatCop(earning.base_amount)}</strong></div>
+          <div><span>Bono</span><strong>{formatCop(earning.bonus_amount)}</strong></div>
+          <div><span>Total</span><strong>{formatCop(earning.total_amount)}</strong></div>
+          <Link href="/app/ingresos">Ver ingresos →</Link>
+        </section>
+      ) : null}
 
       {answer && !evaluation ? (
         <section className="pendingResultNotice">

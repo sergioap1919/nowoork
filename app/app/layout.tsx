@@ -38,9 +38,16 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const specialtyRelation = primarySpecialty?.specialties as { name?: string } | { name?: string }[] | null | undefined;
   const specialty = Array.isArray(specialtyRelation) ? specialtyRelation[0]?.name : specialtyRelation?.name;
 
+
+  const { count: notificationCount } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .is("read_at", null);
+
   return <AppShell
     profileName={profile.full_name || user.email?.split("@")[0] || "Usuario"}
     specialty={specialty || "Solucionador"}
     score={solver?.score ?? 500}
+    notificationCount={notificationCount ?? 0}
   >{children}</AppShell>;
 }

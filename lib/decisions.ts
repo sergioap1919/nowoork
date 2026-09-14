@@ -1,6 +1,8 @@
+
 export type DecisionDifficulty = "basic" | "intermediate" | "expert";
 export type DecisionStatus = "draft" | "published" | "closed" | "cancelled";
 export type AnswerVerdict = "correct" | "neutral" | "incorrect";
+export type SolverEarningStatus = "pending" | "available" | "paid" | "void";
 
 export type SpecialtyOption = {
   id: string;
@@ -8,6 +10,8 @@ export type SpecialtyOption = {
   slug: string;
   parent_id: string | null;
 };
+
+export const DEFAULT_PLATFORM_FEE_RATE = 0.15;
 
 export function difficultyLabel(value: DecisionDifficulty) {
   if (value === "basic") return "Básico";
@@ -22,16 +26,37 @@ export function statusLabel(value: DecisionStatus) {
   return "Cancelada";
 }
 
-
 export function verdictLabel(value: AnswerVerdict) {
   if (value === "correct") return "Acierto";
   if (value === "incorrect") return "Desacierto";
   return "Neutral";
 }
 
+export function earningStatusLabel(value: SolverEarningStatus) {
+  if (value === "available") return "Disponible";
+  if (value === "paid") return "Pagado";
+  if (value === "void") return "Anulado";
+  return "En evaluación";
+}
+
 export function formatCop(value: number | string | null | undefined) {
   const numeric = Number(value ?? 0);
   return `$${numeric.toLocaleString("es-CO", { maximumFractionDigits: 0 })}`;
+}
+
+export function estimateDecisionMaxCost(
+  baseReward: number,
+  performanceBonus: number,
+  solverSlots: number,
+  platformFeeRate = DEFAULT_PLATFORM_FEE_RATE,
+) {
+  const payout = Math.max(0, baseReward + performanceBonus) * Math.max(1, solverSlots);
+  const fee = payout * Math.max(0, platformFeeRate);
+  return {
+    payout,
+    fee,
+    total: payout + fee,
+  };
 }
 
 export function computeCompatibility(

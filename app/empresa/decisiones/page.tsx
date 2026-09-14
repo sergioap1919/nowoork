@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { statusLabel, type DecisionStatus } from "@/lib/decisions";
+import { formatCop, statusLabel, type DecisionStatus } from "@/lib/decisions";
 
 export default async function CompanyDecisionsPage() {
   const supabase = await createClient();
@@ -20,7 +20,7 @@ export default async function CompanyDecisionsPage() {
   const { data: decisions = [] } = companyId
     ? await supabase
         .from("decisions")
-        .select("id, title, status, difficulty, base_reward, created_at")
+        .select("id, title, status, difficulty, base_reward, solver_slots, reserved_credits, final_cost, created_at")
         .eq("company_id", companyId)
         .order("created_at", { ascending: false })
     : { data: [] };
@@ -78,7 +78,7 @@ export default async function CompanyDecisionsPage() {
               <span>Decisión</span>
               <span>Estado</span>
               <span>Respuestas</span>
-              <span>Recompensa</span>
+              <span>Economía</span>
               <span />
             </div>
 
@@ -106,7 +106,11 @@ export default async function CompanyDecisionsPage() {
                 </span>
                 <span>{counts.get(decision.id) ?? 0}</span>
                 <span>
-                  ${Number(decision.base_reward).toLocaleString("es-CO")}
+                  {evaluatedIds.has(decision.id)
+                    ? `${formatCop(decision.final_cost)} final`
+                    : Number(decision.reserved_credits) > 0
+                      ? `${formatCop(decision.reserved_credits)} reservado`
+                      : `${formatCop(decision.base_reward)} × ${decision.solver_slots ?? 3}`}
                 </span>
                 <Link href={`/empresa/decisiones/${decision.id}`}>
                   Abrir →

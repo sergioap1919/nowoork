@@ -1,5 +1,39 @@
 # Changelog
 
+## 2026-09-14 · ZIP 05 · Plataforma completa
+
+- Se agrega `008_platform_complete.sql` sin modificar migraciones anteriores.
+- Se crean notificaciones internas con RLS por usuario y contador de no leídas.
+- Solucionadores reciben avisos por nuevas decisiones compatibles, resultados, cambios de score y recompensas disponibles.
+- Empresas reciben avisos cuando una decisión recibe una respuesta.
+- Se agrega actividad empresarial auditable para creación/cambios de estado, respuestas y resultados.
+- Se agrega vista de equipo empresarial mediante RPC segura sin abrir perfiles de terceros.
+- Se agrega reputación agregada de empresa: decisiones evaluadas, tasa de cierre y respuestas recibidas.
+- El detalle de decisión del solucionador muestra reputación básica de la empresa.
+- Se agrega navegación de Notificaciones para Solucionador y Empresa, y sección Equipo para Empresa.
+- Se repara una omisión detectada al auditar ZIP 04: el detalle del solucionador vuelve a mostrar estado de recompensa, base, bono y total.
+- No se eliminó ningún archivo del proyecto ni se reescribieron migraciones `001`–`007`.
+- Invitaciones de equipo por correo, integraciones externas y pagos reales siguen fuera de este ZIP.
+
+
+## 2026-09-13 · ZIP 04 · Economía Nowoork
+
+- Se agrega `007_economy.sql` sin modificar migraciones ya ejecutadas.
+- Empresa dispone de cuenta de créditos con saldo disponible, reservado y gastado.
+- Se agregan créditos de lanzamiento reclamables una sola vez por empresa para validar el circuito sin dinero real.
+- Publicar una decisión reserva su exposición máxima: recompensas + bonos potenciales + fee provisional de plataforma del 15%.
+- Se agregan cupos de solucionadores por decisión (1–20); al completarse los cupos la decisión se cierra automáticamente.
+- La recompensa base entra al wallet como pendiente al responder.
+- Al evaluar una decisión, la base se vuelve disponible y el bono se paga únicamente a respuestas clasificadas como Acierto.
+- El excedente reservado vuelve al saldo de la empresa y el costo real queda registrado en la decisión.
+- Decisiones con respuestas ya no pueden cancelarse; deben cerrarse y evaluarse.
+- Se crean ledgers de créditos empresariales y wallet del solucionador con RLS y sin escritura directa desde navegador.
+- `/empresa/creditos` muestra saldo y movimientos reales.
+- `/app/ingresos` deja de usar valores demo y se alimenta de wallet/earnings reales.
+- El detalle de decisión muestra reserva/costo final y el solucionador ve el estado económico de su respuesta.
+- Las decisiones publicadas antes de ZIP 04 pueden seguir evaluándose para reputación; las nuevas respuestas económicas requieren decisiones financiadas después de la migración.
+- Retiros, cobros con pasarela, impuestos y antifraude siguen fuera de este ZIP.
+
 ## 2026-09-13 · ZIP 03 · Resultados + reputación
 
 - Se agrega `006_results_reputation.sql`.

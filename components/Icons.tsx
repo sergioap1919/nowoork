@@ -11,3 +11,6 @@ export const WalletIcon = (p: Props) => <svg {...base} {...p}><path d="M3 7h16a2
 export const ProfileIcon = (p: Props) => <svg {...base} {...p}><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>;
 export const SearchIcon = (p: Props) => <svg {...base} {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>;
 export const ArrowIcon = (p: Props) => <svg {...base} {...p}><path d="M5 12h14"/><path d="m14 7 5 5-5 5"/></svg>;
+
+export const BellIcon = (p: Props) => <svg {...base} {...p}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>;
+export const TeamIcon = (p: Props) => <svg {...base} {...p}><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2"/><path d="M15 15a5 5 0 0 1 6 5"/></svg>;

@@ -74,7 +74,7 @@ export function CompanyResultEvaluationForm({
     }
 
     const confirmed = window.confirm(
-      "¿Registrar este resultado? La evaluación será definitiva y actualizará el score de los solucionadores.",
+      "¿Registrar este resultado? La evaluación será definitiva, actualizará score y wallet, y liquidará los créditos reservados de la empresa.",
     );
     if (!confirmed) return;
 
@@ -119,7 +119,8 @@ export function CompanyResultEvaluationForm({
         <h2>Cierra el ciclo de esta decisión.</h2>
         <p>
           Registra qué ocurrió y luego clasifica cada criterio recibido. Nowoork
-          usará esta evaluación para actualizar reputación, precisión y rachas.
+          actualizará reputación y wallet, pagará bonos por acierto y devolverá
+          a la empresa cualquier crédito reservado que no se haya utilizado.
         </p>
       </div>
 
@@ -222,7 +223,7 @@ export function CompanyResultEvaluationForm({
 
       <div className="resultEvaluationActions">
         <span>
-          Esta acción es definitiva y generará eventos de score auditables.
+          Esta acción es definitiva: genera eventos de score y movimientos económicos auditables.
         </span>
         <button className="primaryButton" disabled={loading} type="submit">
           {loading ? "Registrando resultado…" : "Registrar resultado y evaluar"}

@@ -6,6 +6,7 @@ import { CompanyResultEvaluationForm } from "@/components/CompanyResultEvaluatio
 import { createClient } from "@/lib/supabase/server";
 import {
   difficultyLabel,
+  estimateDecisionMaxCost,
   formatCop,
   statusLabel,
   verdictLabel,
@@ -31,7 +32,7 @@ export default async function CompanyDecisionPage({
     supabase
       .from("decisions")
       .select(
-        "id, title, context, question, specialty_id, difficulty, expected_minutes, base_reward, performance_bonus, status, deadline_at, created_at, published_at",
+        "id, title, context, question, specialty_id, difficulty, expected_minutes, base_reward, performance_bonus, solver_slots, platform_fee_rate, reserved_credits, final_cost, economy_locked_at, status, deadline_at, created_at, published_at",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -78,6 +79,12 @@ export default async function CompanyDecisionPage({
     (item) => item.id === decision.specialty_id,
   );
   const status = decision.status as DecisionStatus;
+  const maxBudget = estimateDecisionMaxCost(
+    Number(decision.base_reward),
+    Number(decision.performance_bonus),
+    Number(decision.solver_slots ?? 3),
+    Number(decision.platform_fee_rate ?? 0.15),
+  );
 
   return (
     <main className="companyMain compactCompanyMain">
@@ -91,7 +98,7 @@ export default async function CompanyDecisionPage({
           <p>
             {specialty?.name ?? "General"} ·{" "}
             {difficultyLabel(decision.difficulty as DecisionDifficulty)} ·{" "}
-            {decision.expected_minutes} min
+            {decision.expected_minutes} min · {decision.solver_slots ?? 3} solucionadores
           </p>
         </div>
         {!result ? (
@@ -112,6 +119,7 @@ export default async function CompanyDecisionPage({
             expected_minutes: decision.expected_minutes,
             base_reward: Number(decision.base_reward),
             performance_bonus: Number(decision.performance_bonus),
+            solver_slots: Number(decision.solver_slots ?? 3),
             deadline_at: decision.deadline_at,
           }}
         />
@@ -127,27 +135,34 @@ export default async function CompanyDecisionPage({
               <h2>{decision.question}</h2>
             </article>
           </section>
-          <section className="decisionFactStrip">
+          <section className="decisionFactStrip economyDecisionFacts">
             <div>
-              <span>Recompensa</span>
+              <span>Base / solucionador</span>
               <strong>{formatCop(decision.base_reward)}</strong>
             </div>
             <div>
-              <span>Bono</span>
+              <span>Bono por acierto</span>
               <strong>{formatCop(decision.performance_bonus)}</strong>
             </div>
             <div>
-              <span>Fecha límite</span>
-              <strong>
-                {decision.deadline_at
-                  ? new Date(decision.deadline_at).toLocaleString("es-CO")
-                  : "Sin límite"}
-              </strong>
+              <span>Cupos</span>
+              <strong>{(answers ?? []).length} / {decision.solver_slots ?? 3}</strong>
             </div>
             <div>
-              <span>Respuestas</span>
-              <strong>{(answers ?? []).length}</strong>
+              <span>{result ? "Costo final" : "Reservado"}</span>
+              <strong>{formatCop(result ? decision.final_cost : decision.reserved_credits)}</strong>
             </div>
+          </section>
+          <section className="decisionEconomySummary">
+            <div>
+              <span>Exposición máxima al publicar</span>
+              <strong>{formatCop(maxBudget.total)}</strong>
+            </div>
+            <div>
+              <span>Fee provisional</span>
+              <strong>{Math.round(Number(decision.platform_fee_rate ?? 0.15) * 100)}%</strong>
+            </div>
+            <p>{result ? "La decisión ya fue liquidada. El saldo no utilizado volvió a los créditos de la empresa." : decision.economy_locked_at ? "El presupuesto máximo está reservado. Solo se gastará lo correspondiente a respuestas, bonos obtenidos y fee." : "Esta decisión fue publicada antes de activar la economía. Para probar wallet y créditos crea una nueva decisión."}</p>
           </section>
         </>
       )}
@@ -205,9 +220,7 @@ export default async function CompanyDecisionPage({
                   <p>{answer.rationale}</p>
                   {evaluation ? (
                     <div className="answerEvaluationSummary">
-                      <span
-                        className={`resultVerdict ${evaluation.verdict}`}
-                      >
+                      <span className={`resultVerdict ${evaluation.verdict}`}>
                         {verdictLabel(evaluation.verdict as AnswerVerdict)}
                       </span>
                       <strong>
