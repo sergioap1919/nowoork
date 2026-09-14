@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-09-13 · ZIP 01 cerrado · Fundación
+
+- Registro de Solucionador y Empresa consolidado.
+- Separación estricta de roles y redirecciones por rol.
+- Cierre de sesión disponible en ambos productos.
+- Recuperación de contraseña y creación de nueva contraseña.
+- Perfil editable de Solucionador: nombre, especialidad, experiencia y enfoque.
+- Perfil editable de Empresa: responsable, nombre comercial y sector.
+- Nuevo shell empresarial para que navegación, tema y cierre de sesión sean consistentes en todas las páginas de Empresa.
+- El avatar de Solucionador abre su perfil.
+- Nueva migración `004_profile_management.sql` con RPCs de edición segura.
+- Rol, score y métricas de reputación continúan fuera del alcance de edición del navegador.
+- Los mensajes de autenticación dejan de mostrar instrucciones técnicas al usuario final.
+
 ## 2026-09-13 · Flujo de registro por intención
 - La portada envía “Quiero resolver decisiones” a registro con Solucionador preseleccionado.
 - La portada envía “Soy una empresa” y “Conectar mi empresa” a registro con Empresa preseleccionada.

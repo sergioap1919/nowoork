@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const allowedNextPaths = new Set(["/auth/nueva-contrasena"]);
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const requestedNext = searchParams.get("next");
 
   if (!code) {
     return NextResponse.redirect(`${origin}/login?error=confirmation`);
@@ -14,6 +17,10 @@ export async function GET(request: Request) {
 
   if (error) {
     return NextResponse.redirect(`${origin}/login?error=confirmation`);
+  }
+
+  if (requestedNext && allowedNextPaths.has(requestedNext)) {
+    return NextResponse.redirect(`${origin}${requestedNext}`);
   }
 
   const { data: { user } } = await supabase.auth.getUser();

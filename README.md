@@ -1,46 +1,54 @@
-# Nowoork v0.1 — Concept MVP
+# Nowoork v0.1 — Foundation
 
-Primer bloque visual/funcional del MVP de Nowoork.
+Nowoork es una plataforma donde empresas publican decisiones que necesitan criterio humano y solucionadores construyen reputación a partir de resultados verificables.
 
-## Incluye
-- Landing pública.
-- Registro con dos perfiles: Solucionador / Empresa.
-- Login visual.
-- Dashboard de solucionador.
-- Marketplace de decisiones con filtros.
-- Resultados: aciertos/desaciertos.
-- Ranking.
-- Ingresos.
-- Dashboard inicial de empresa.
-- Base visual para conexiones Shopify + Meta Ads.
+## Estado actual · ZIP 01
+
+La fundación de identidad y acceso ya incluye:
+
+- Landing pública con entradas diferenciadas para Solucionador y Empresa.
+- Registro real con Supabase Auth.
+- Confirmación de correo.
+- Roles persistentes y mutuamente excluyentes: `solver` / `company`.
+- Redirección segura según rol.
+- Login y cierre de sesión en ambos lados.
+- Recuperación y cambio de contraseña.
+- Perfil básico editable para Solucionador.
+- Perfil básico editable para Empresa.
+- Score y rol protegidos contra edición directa desde el navegador.
+- RLS y permisos mínimos para la Data API.
 - Modo claro/oscuro.
-- Identidad Nowoork: #C0DB00 + grafitos.
-- Logo oficial suministrado por el usuario.
+- Export ZIP limpio con `npm run export`.
 
-## Todavía NO incluye
-- Supabase/Auth real.
-- Persistencia de datos.
-- Pagos/recompensas reales.
-- Apps OAuth de Shopify/Meta.
-- Motor automático de decisiones.
-- IA/score real.
+## Migraciones ejecutables en orden
 
-## Stack propuesto
-- Next.js 16 App Router
-- React 19
-- TypeScript estricto
-- Supabase (siguiente bloque)
-- Vercel
+```text
+001_core.sql
+002_role_integrity.sql
+003_data_api_permissions.sql
+004_profile_management.sql
+```
 
-## Ejecutar
+Las migraciones ya ejecutadas no se reescriben. Cada nuevo bloque agrega una migración incremental.
+
+## Próximo bloque
+
+**ZIP 02 · Marketplace completo**
+
+Empresa crea, edita, publica y cancela decisiones reales; Solucionador descubre decisiones reales, filtra y responde una única vez.
+
+## Desarrollo local
+
 ```bash
 npm install
 npm run dev
 ```
 
-## Próximo bloque recomendado
-1. Supabase + Auth.
-2. Esquema de perfiles/especialidades.
-3. Empresas y memberships.
-4. Decisiones reales + respuestas.
-5. Motor de score inicial.
+Variables requeridas en `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+`.env.local` nunca debe subirse a Git.
