@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-14 · Hotfix · Marketplace de Decisiones 404
+
+- Se corrige `/app/decisiones`, que había sido reemplazado accidentalmente por una copia de la vista dinámica `/app/decisiones/[id]`.
+- Se restaura el marketplace real de decisiones desde Supabase con compatibilidad, especialidad, recompensa y estado de respuesta.
+- La vista de detalle `[id]` permanece intacta.
+- No requiere SQL ni cambios de esquema.
+
+## 2026-09-14 · Preparación ZIP 06 · Refactor CSS sin cambio funcional
+
+- `app/globals.css` deja de concentrar toda la interfaz y queda reducido a imports ordenados.
+- Se crean módulos CSS por responsabilidad en `app/styles/` para tokens, base, marketing, shells/auth, foundation, decisiones, reputación, economía y plataforma.
+- El orden exacto de las reglas CSS originales se conserva para evitar cambios visuales o de cascada.
+- No se modifican componentes, lógica de negocio, rutas, migraciones ni contratos con Supabase.
+- Este bloque es únicamente estructural y debe pasar `npm run build` + smoke visual antes de incorporar Shopify.
+
 ## 2026-09-14 · ZIP 05 · Plataforma completa
 
 - Se agrega `008_platform_complete.sql` sin modificar migraciones anteriores.
